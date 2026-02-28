@@ -4,6 +4,11 @@ import discord
 TOKEN = os.getenv("DISCORD_TOKEN")
 RP_EL_BOT_ID = os.getenv("RP_EL_BOT_ID")
 
+if not TOKEN:
+    raise RuntimeError("DISCORD_TOKEN is missing. Set it in Railway Variables.")
+if not RP_EL_BOT_ID:
+    raise RuntimeError("RP_EL_BOT_ID is missing. Set it in Railway Variables.")
+
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -12,51 +17,36 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print(f"✅ Logged in as {client.user}")
+    print(f"✅ Listening for RP-EL-BOT ID: {RP_EL_BOT_ID}")
 
 @client.event
-async def on_message(message):
-    @client.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     # Ignore itself
-    if message.author == client.user:
+    if message.author.id == client.user.id:
         return
 
-    print(f"--- MESSAGE RECEIVED ---")
-    print(f"Author: {message.author}")
-    print(f"Author ID: {message.author.id}")
+    # Debug: show that we are receiving messages at all
+    print("--- MESSAGE RECEIVED ---")
+    print(f"Author: {message.author} | ID: {message.author.id}")
     print(f"Has embeds: {len(message.embeds)}")
 
-    # Check for RP-EL-BOT
-    if str(message.author.id) == os.getenv("RP_EL_BOT_ID"):
-        print("🔥 DETECTED RP-EL-BOT")
-
-        if message.embeds:
-            embed = message.embeds[0]
-            print(f"Embed title: {embed.title}")
-
-            if embed.title and "Event Roll" in embed.title:
-                print("🔥 EVENT ROLL DETECTED")
-
-                await message.reply(
-                    "🔥 Fallout Bot detected an event. (Test successful)",
-                    mention_author=False
-                )
-    # Ignore self
-    if message.author == client.user:
-        return
-
     # Only listen to RP-EL-BOT
-    if str(message.author.id) != RP_EL_BOT_ID:
+    if str(message.author.id) != str(RP_EL_BOT_ID):
         return
 
-    # Only care about embeds (rp-el-bot uses embeds)
+    print("🔥 DETECTED RP-EL-BOT MESSAGE")
+
+    # RP-EL-BOT messages you care about are embeds
     if not message.embeds:
+        print("⚠ RP-EL-BOT message had no embeds")
         return
 
     embed = message.embeds[0]
+    print(f"Embed title: {embed.title}")
 
     # Only respond to Event Rolls
     if embed.title and "Event Roll" in embed.title:
+        print("🔥 EVENT ROLL DETECTED - replying")
         await message.reply(
             "🔥 Fallout Bot detected an event. (Test successful)",
             mention_author=False
