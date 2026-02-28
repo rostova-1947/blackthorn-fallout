@@ -45,7 +45,7 @@ async def on_message(message: discord.Message):
     print(f"Embed title: {embed.title}")
 
     # Only respond to Event Rolls
-    if embed.title and "Event Roll" in embed.title:
+   if embed.title and "Event" in embed.title:
         print("🔥 EVENT ROLL DETECTED - replying")
         await message.reply(
             "🔥 Fallout Bot detected an event. (Test successful)",
