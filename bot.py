@@ -25,7 +25,7 @@ async def on_message(message: discord.Message):
     if message.author.id == client.user.id:
         return
 
-    # Debug: show that we are receiving messages at all
+    # Debug: confirm we're receiving messages
     print("--- MESSAGE RECEIVED ---")
     print(f"Author: {message.author} | ID: {message.author.id}")
     print(f"Has embeds: {len(message.embeds)}")
@@ -36,7 +36,7 @@ async def on_message(message: discord.Message):
 
     print("🔥 DETECTED RP-EL-BOT MESSAGE")
 
-    # RP-EL-BOT messages you care about are embeds
+    # RP-EL-BOT events are embeds
     if not message.embeds:
         print("⚠ RP-EL-BOT message had no embeds")
         return
@@ -44,9 +44,9 @@ async def on_message(message: discord.Message):
     embed = message.embeds[0]
     print(f"Embed title: {embed.title}")
 
-    # Only respond to Event Rolls
-   if embed.title and "Event" in embed.title:
-        print("🔥 EVENT ROLL DETECTED - replying")
+    # Trigger on any RP-EL event embeds (your titles look like: 'Event (Familial): ...')
+    if embed.title and "Event" in embed.title:
+        print("🔥 EVENT DETECTED - replying")
         await message.reply(
             "🔥 Fallout Bot detected an event. (Test successful)",
             mention_author=False
